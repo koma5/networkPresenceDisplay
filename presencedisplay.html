@@ -39,11 +39,11 @@ d3.csv("./data.csv").then(function(data) {
 	var uniqueNodes = Array.from(new Set(nodes))
 
 	const xScale = d3.scaleTime()
-		.range([margin, width-margin])
+		.range([0, width])
 		.domain([d3.min(dates), d3.max(dates)])
 
 	const yScale = d3.scaleLinear()
-		.range([margin, height - margin])
+		.range([0, height])
 		.domain([0, uniqueNodes.length])
 
 	var squareHeight = height / uniqueNodes.length;
@@ -53,7 +53,7 @@ d3.csv("./data.csv").then(function(data) {
 	    .call(d3.axisLeft(yScale));
 
 	chart.append('g')
-	    .call(d3.axisBottom(xScale));
+	    .call(d3.axisTop(xScale));
 
 	chart.selectAll()
 		.data(data)
