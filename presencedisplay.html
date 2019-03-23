@@ -1,0 +1,75 @@
+<html>
+  <head>
+  <meta charset="utf-8"> 
+  <script src="./d3.v5.min.js"></script>
+</head>
+<body>
+<script>
+
+const margin = 40;
+const width  = 400 - 2 * margin;
+const height = 400 - 2 * margin;
+
+
+
+
+d3.csv("./data.csv").then(function(data) {
+
+	const svg = d3.select('body').append('svg')
+		.attr('width', width + 2 * margin)
+		.attr('height', height + 2 * margin)
+		.append("g")
+
+
+	const chart = svg.append('g')
+	    .attr('transform', `translate(${margin}, ${margin})`);
+
+	var parseDate = d3.timeParse("%Y-%m-%d %H:%M")
+
+	/* unpack data array evt. d3.values*/
+	var dates = []
+	var nodes = []
+
+	data.forEach(
+		function(d, i) {
+			dates.push(parseDate(d['date']))
+			nodes.push(d['node'])
+	});
+	
+	var uniqueNodes = Array.from(new Set(nodes))
+
+	const xScale = d3.scaleTime()
+		.range([margin, width-margin])
+		.domain([d3.min(dates), d3.max(dates)])
+
+	const yScale = d3.scaleLinear()
+		.range([margin, height - margin])
+		.domain([0, uniqueNodes.length])
+
+	var squareHeight = height / uniqueNodes.length;
+	var squareWidth = width / ((d3.max(dates) - d3.min(dates)) / 300000);
+
+	chart.append('g')
+	    .call(d3.axisLeft(yScale));
+
+	chart.append('g')
+	    .call(d3.axisBottom(xScale));
+
+	chart.selectAll()
+		.data(data)
+		.enter()
+		.append('rect')
+		.attr('x', (s) => xScale(parseDate(s.date)))
+		.attr('y', (s) => yScale(uniqueNodes.indexOf(s.node)))
+		.attr('height', squareHeight)
+		.attr('width', squareWidth)
+
+
+		console.log((d3.max(dates) - d3.min(dates)) / 300)
+});
+
+
+</script>
+</body>
+</html>
+
